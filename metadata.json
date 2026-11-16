@@ -1,0 +1,6 @@
+{
+  "name": "خضرة الصعيد للمبيدات والأسمدة",
+  "description": "متجر ومستودع زراعي متخصص في بيع المبيدات والأسمدة الأصلية لمزارعي بني سويف والفيوم والمنيا مع التوصيل والدفع عند الاستلام.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
