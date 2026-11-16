@@ -25,9 +25,11 @@ export function ProductModal({
   onOrderProduct,
 }: ProductModalProps) {
   const [imgFailed, setImgFailed] = useState(false);
+  const [variantIdx, setVariantIdx] = useState(0);
 
   useEffect(() => {
     setImgFailed(false);
+    setVariantIdx(0);
   }, [product?.id]);
 
   useEffect(() => {
@@ -51,9 +53,23 @@ export function ProductModal({
 
   if (!product) return null;
 
+  const activeVariant =
+    product.variants && product.variants.length > 0
+      ? product.variants[variantIdx] ?? product.variants[0]
+      : null;
+
+  const displayPackSize = activeVariant
+    ? activeVariant.packSize
+    : product.packSize;
+  const displayPrice = activeVariant
+    ? activeVariant.priceEgp
+    : product.priceEgp;
+
   const whatsappUrl = buildWhatsAppUrl(
     WHATSAPP_NUMBER,
-    `السلام عليكم، أريد الاستفسار وطلب المنتج:\n- ${product.name}\n- العبوة: ${product.packSize}`
+    `السلام عليكم، أريد الاستفسار وطلب المنتج:\n- ${product.name}\n- العبوة: ${displayPackSize}${
+      displayPrice !== null ? `\n- السعر: ${displayPrice} جنيه` : ''
+    }`
   );
 
   return (
@@ -71,9 +87,9 @@ export function ProductModal({
         {/* Top bar */}
         <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-[#D6DFD0] bg-white px-5 py-4">
           <div className="text-xs font-medium text-[#4A5D4F]">
-            <span>{CATEGORY_LABELS[product.category]}</span>
+            <span>{product.subCategory || CATEGORY_LABELS[product.category]}</span>
             <span aria-hidden="true"> · </span>
-            <span>{product.packSize}</span>
+            <span>{displayPackSize}</span>
           </div>
           <button
             type="button"
@@ -115,25 +131,47 @@ export function ProductModal({
                 {product.shortUsageNote}
               </p>
 
+              {product.variants && product.variants.length > 1 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {product.variants.map((variant, idx) => {
+                    const active = idx === variantIdx;
+                    return (
+                      <button
+                        key={variant.packSize}
+                        type="button"
+                        onClick={() => setVariantIdx(idx)}
+                        className={`min-h-[36px] rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer ${
+                          active
+                            ? 'border-[#14532D] bg-[#14532D] text-white'
+                            : 'border-[#D6DFD0] bg-[#F8F9F6] text-[#17201A] hover:border-[#14532D]'
+                        }`}
+                      >
+                        {variant.packSize} — {variant.priceEgp} ج.م
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               <div className="mt-4 flex items-baseline gap-2">
-                {product.priceEgp !== null ? (
+                {displayPrice !== null ? (
                   <p className="font-display text-2xl font-extrabold text-[#14532D] tabular-nums">
-                    {product.priceEgp.toLocaleString('ar-EG')} ج.م
+                    {displayPrice.toLocaleString('ar-EG')} ج.م
                   </p>
                 ) : (
                   <p className="text-base font-bold text-[#9A3412]">
-                    السعر يُحدَّث من البروشور
+                    السعر يُحدَّث عند التأكيد
                   </p>
                 )}
                 <span className="text-xs text-[#4A5D4F]">
-                  / {product.packSize} (الدفع عند الاستلام)
+                  / {displayPackSize} (الدفع عند الاستلام)
                 </span>
               </div>
             </div>
           </div>
 
           {/* Technical agronomic details */}
-          <div className="mt-6 divide-y divide-[#E6ECE1] rounded-xl border border-[#D6DFD0] bg-[#F8F9F6]">
+          <dl className="mt-6 divide-y divide-[#E6ECE1] rounded-xl border border-[#D6DFD0] bg-[#F8F9F6]">
             <div className="p-4">
               <dt className="text-xs font-bold text-[#4A5D4F]">المادة الفعالة / التركيب</dt>
               <dd className="mt-1 text-sm font-medium text-[#17201A]">
@@ -195,7 +233,7 @@ export function ProductModal({
                 </div>
               </div>
             )}
-          </div>
+          </dl>
 
           {/* CTA buttons */}
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">

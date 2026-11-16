@@ -30,9 +30,11 @@ export function OfferLandingPage({
   onNavigateHome,
 }: OfferLandingPageProps) {
   const [imgFailed, setImgFailed] = useState(false);
+  const [variantIdx, setVariantIdx] = useState(0);
 
   useEffect(() => {
     setImgFailed(false);
+    setVariantIdx(0);
     if (product) {
       trackPixelEvent('ViewContent', {
         content_name: product.name,
@@ -67,9 +69,23 @@ export function OfferLandingPage({
     );
   }
 
+  const activeVariant =
+    product.variants && product.variants.length > 0
+      ? product.variants[variantIdx] ?? product.variants[0]
+      : null;
+
+  const displayPackSize = activeVariant
+    ? activeVariant.packSize
+    : product.packSize;
+  const displayPrice = activeVariant
+    ? activeVariant.priceEgp
+    : product.priceEgp;
+
   const whatsappUrl = buildWhatsAppUrl(
     WHATSAPP_NUMBER,
-    `السلام عليكم، جاي من صفحة عرض المنتج:\n- ${product.name}\n- العبوة: ${product.packSize}\nأرجو تأكيد السعر والتوصيل.`
+    `السلام عليكم، جاي من صفحة عرض المنتج:\n- ${product.name}\n- العبوة: ${displayPackSize}${
+      displayPrice !== null ? `\n- السعر المعلن: ${displayPrice} جنيه` : ''
+    }\nأرجو تأكيد التوفر والتوصيل.`
   );
 
   return (
@@ -115,8 +131,8 @@ export function OfferLandingPage({
 
           <div className="flex flex-col justify-center lg:col-span-7">
             <p className="text-sm font-bold text-[#15803D]">
-              {CATEGORY_LABELS[product.category]} · {product.packSize} · الدفع عند
-              الاستلام
+              {product.subCategory || CATEGORY_LABELS[product.category]} ·{' '}
+              {displayPackSize} · الدفع عند الاستلام
             </p>
 
             <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight text-[#17201A] sm:text-4xl [text-wrap:balance]">
@@ -133,19 +149,41 @@ export function OfferLandingPage({
               {product.shortUsageNote}
             </p>
 
-            <div className="mt-6 flex flex-wrap items-baseline gap-3 border-y border-[#D6DFD0] py-4">
-              {product.priceEgp !== null ? (
+            {product.variants && product.variants.length > 1 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {product.variants.map((variant, idx) => {
+                  const active = idx === variantIdx;
+                  return (
+                    <button
+                      key={variant.packSize}
+                      type="button"
+                      onClick={() => setVariantIdx(idx)}
+                      className={`min-h-[38px] rounded-lg border px-3.5 py-1.5 text-sm font-bold transition-colors cursor-pointer ${
+                        active
+                          ? 'border-[#14532D] bg-[#14532D] text-white'
+                          : 'border-[#D6DFD0] bg-white text-[#17201A] hover:border-[#14532D]'
+                      }`}
+                    >
+                      {variant.packSize} — {variant.priceEgp} ج.م
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="mt-5 flex flex-wrap items-baseline gap-3 border-y border-[#D6DFD0] py-4">
+              {displayPrice !== null ? (
                 <p className="font-display text-3xl font-extrabold text-[#14532D] tabular-nums">
-                  {product.priceEgp.toLocaleString('ar-EG')}{' '}
+                  {displayPrice.toLocaleString('ar-EG')}{' '}
                   <span className="text-lg font-bold">جنيه مصري</span>
                 </p>
               ) : (
                 <p className="text-lg font-bold text-[#9A3412]">
-                  يُحدَّث السعر من البروشور
+                  يُحدَّث السعر عند التأكيد
                 </p>
               )}
               <span className="text-sm text-[#4A5D4F]">
-                / {product.packSize}
+                / {displayPackSize}
               </span>
             </div>
 
@@ -213,7 +251,7 @@ export function OfferLandingPage({
 
           <dl className="mt-5 divide-y divide-[#E6ECE1] rounded-2xl border border-[#D6DFD0] bg-[#F8F9F6]">
             <div className="p-4 sm:p-5">
-              <dt className="text-xs font-bold text-[#4A5D4F]">المادة الفعالة</dt>
+              <dt className="text-xs font-bold text-[#4A5D4F]">المادة الفعالة / التركيب</dt>
               <dd className="mt-1 text-base font-bold text-[#17201A]">
                 {product.activeIngredient}
               </dd>

@@ -24,16 +24,19 @@ export const WHATSAPP_NUMBER =
 export const PHONE_NUMBER =
   viteEnv.VITE_PHONE_NUMBER || '01092935779';
 
-// رابط صفحة فيسبوك الخاصة بك (استبدله برابط صفحتك الحقيقي في الخطوة الثانية)
+// رابط صفحة فيسبوك الخاصة بك (استبدله برابط صفحتك الحقيقي عند النشر)
 export const FACEBOOK_PAGE_URL =
   viteEnv.VITE_FACEBOOK_PAGE_URL || '';
 
 // الاسم التجاري الظاهر في الترويسة
-export const BRAND_NAME = 'خضرة الصعيد';
+export const BRAND_NAME = 'أبو عمة وجرين';
 
-// بيانات الشركة والترخيص (ثوابت قابلة للتعديل — تظهر في تذييل الموقع)
+// اسم المهندس المسؤول الظاهر في البروشور
+export const AGRONOMIST_NAME = 'مهندس / محمود أحمد';
+
+// بيانات الشركة والترخيص (تظهر في تذييل الموقع)
 export const COMPANY_LEGAL_NAME =
-  '[أدخل اسم الشركة / المستودع الزراعي الرسمي هنا]';
+  'شركة أبو عمة وجرين للتجارة والكيماويات الزراعية';
 export const PESTICIDE_LICENSE_NUMBER =
   '[أدخل رقم ترخيص الاتجار في المبيدات والأسمدة / السجل التجاري هنا]';
 
@@ -46,3 +49,18 @@ export const HERO_IMAGE_URL =
   '/src/assets/images/hero_egypt_agriculture_1794845721723.jpg';
 export const OG_IMAGE_URL =
   '/src/assets/images/og_share_banner_1794845722828.jpg';
+
+export const BROCHURE_SHEETS = [
+  {
+    title: 'قائمة أسعار المبيدات الفطرية والحشرية',
+    src: '/assets/aistudio/0a6e137e-4606-4a47-9914-5a6fd921ab82_9ec55075.jpeg',
+  },
+  {
+    title: 'قائمة أسعار الأسمدة والمغذيات',
+    src: '/assets/aistudio/386a8d33-6f31-481f-b25b-9ec331909c0a_038eca1f.jpeg',
+  },
+  {
+    title: 'البروشور التفصيلي للمنتجات — م. محمود أحمد',
+    src: '/assets/aistudio/IMG_0813_90baecca.jpeg',
+  },
+] as const;

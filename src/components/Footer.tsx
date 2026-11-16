@@ -1,4 +1,5 @@
 import {
+  AGRONOMIST_NAME,
   BRAND_NAME,
   COMPANY_LEGAL_NAME,
   DELIVERY_GOVERNORATES,
@@ -29,10 +30,13 @@ export function Footer() {
               {BRAND_NAME}
             </p>
             <p className="mt-3 text-sm leading-relaxed text-[#C2D3C8]">
-              توريد المبيدات الزراعية والأسمدة الأصلية لمزارعي محافظات:{' '}
-              {DELIVERY_GOVERNORATES.join(' · ')}.
+              {COMPANY_LEGAL_NAME} — توريد المبيدات الزراعية والأسمدة الأصلية
+              لمزارعي محافظات: {DELIVERY_GOVERNORATES.join(' · ')}.
             </p>
-            <p className="mt-3 text-xs leading-relaxed text-[#A8BFB0]">
+            <p className="mt-2 text-xs font-bold text-[#86EFAC]">
+              إشراف فني واستشارات: {AGRONOMIST_NAME}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-[#A8BFB0]">
               {WORKING_HOURS}
             </p>
           </div>

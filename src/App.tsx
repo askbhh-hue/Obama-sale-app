@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Check,
   ChevronDown,
+  FileText,
   MessageCircle,
   Phone,
   Search,
@@ -10,6 +11,7 @@ import {
   Truck,
   UserCheck,
   Wallet,
+  X,
 } from 'lucide-react';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
@@ -19,6 +21,9 @@ import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { StickyConversionBar } from './components/StickyConversionBar';
 import {
+  AGRONOMIST_NAME,
+  BRAND_NAME,
+  BROCHURE_SHEETS,
   DELIVERY_GOVERNORATES,
   HERO_IMAGE_URL,
   PHONE_NUMBER,
@@ -69,6 +74,10 @@ export default function App() {
     string[]
   >([]);
   const [heroImgFailed, setHeroImgFailed] = useState(false);
+  const [activeBrochureSheet, setActiveBrochureSheet] = useState<{
+    title: string;
+    src: string;
+  } | null>(null);
 
   useEffect(() => {
     setAttribution(captureAndGetAttribution());
@@ -175,7 +184,7 @@ export default function App() {
               <div className="grid gap-8 lg:grid-cols-12 lg:items-stretch">
                 <div className="flex flex-col justify-center lg:col-span-6">
                   <p className="text-sm font-bold text-[#15803D]">
-                    حصرياً لمزارعي {DELIVERY_GOVERNORATES.join(' · ')}
+                    {BRAND_NAME} — حصرياً لمزارعي {DELIVERY_GOVERNORATES.join(' · ')}
                   </p>
 
                   <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight text-[#17201A] sm:text-4xl lg:text-[2.65rem] [text-wrap:balance]">
@@ -183,8 +192,9 @@ export default function App() {
                   </h1>
 
                   <p className="mt-4 text-base leading-relaxed text-[#425246] sm:text-lg">
-                    احمِ محصولك من الآفات والأمراض وزد إنتاجية الفدان بمنتجات
-                    أصلية مختومة وإرشاد مجاني من مهندس زراعي قبل الرش أو التسميد.
+                    أصناف فورتيس وجرين الأصلية المختومة مع متابعة مباشرة من{' '}
+                    <span className="font-bold text-[#14532D]">{AGRONOMIST_NAME}</span>{' '}
+                    لتحديد الجرعة المناسبة لمحصولك قبل الرش أو التسميد.
                   </p>
 
                   <div className="mt-6 flex flex-col gap-3">
@@ -403,6 +413,41 @@ export default function App() {
                   </button>
                 </div>
               )}
+
+              {/* Original Brochure & Price Lists (lazy collapsible for slow connections) */}
+              <details className="mt-8 rounded-2xl border border-[#D6DFD0] bg-[#F8F9F6] p-4 sm:p-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-display text-base font-bold text-[#14532D]">
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 shrink-0" aria-hidden="true" />
+                    <span>عرض صور قوائم الأسعار والبروشور الرسمي ({BROCHURE_SHEETS.length} صفحات)</span>
+                  </span>
+                  <ChevronDown className="h-5 w-5 shrink-0" aria-hidden="true" />
+                </summary>
+                <div className="mt-4 grid gap-4 border-t border-[#D6DFD0] pt-4 sm:grid-cols-3">
+                  {BROCHURE_SHEETS.map((sheet) => (
+                    <button
+                      key={sheet.src}
+                      type="button"
+                      onClick={() => setActiveBrochureSheet(sheet)}
+                      className="group overflow-hidden rounded-xl border border-[#D6DFD0] bg-white text-right transition-colors hover:border-[#14532D] cursor-pointer"
+                    >
+                      <div className="aspect-[4/3] w-full overflow-hidden bg-[#EFF3EC]">
+                        <img
+                          src={sheet.src}
+                          alt={sheet.title}
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                          className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                      <p className="p-3 text-xs font-bold text-[#17201A]">
+                        {sheet.title}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </details>
             </div>
           </section>
 
@@ -428,8 +473,8 @@ export default function App() {
                       desc: 'تغطية سريعة ومنتظمة لمراكز وقرى بني سويف والفيوم والمنيا فقط.',
                     },
                     {
-                      title: 'توجيه مهندس زراعي للجرعة الصحيحة',
-                      desc: 'نؤكد معك الجرعة المناسبة لعمر الزرع ونوع الإصابة قبل الرش لتوفر فلوسك وتحمي محصولك.',
+                      title: `إرشاد ${AGRONOMIST_NAME} للجرعة الصحيحة`,
+                      desc: 'نراجع معك عمر المحصول ونوع الإصابة عبر واتساب أو الهاتف قبل الرش لتوفر فلوسك وتحمي أرضك.',
                     },
                     {
                       title: 'الدفع عند الاستلام بعد المعاينة',
@@ -558,6 +603,41 @@ export default function App() {
         onClose={() => setSelectedModalProduct(null)}
         onOrderProduct={handleOrderProductFromModal}
       />
+
+      {activeBrochureSheet && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={activeBrochureSheet.title}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4"
+          onClick={() => setActiveBrochureSheet(null)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-3 sm:p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h3 className="font-display text-base font-bold text-[#17201A]">
+                {activeBrochureSheet.title}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setActiveBrochureSheet(null)}
+                aria-label="إغلاق الصورة"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#D6DFD0] text-[#17201A] hover:bg-[#EFF3EC] cursor-pointer"
+              >
+                <X className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+            <img
+              src={activeBrochureSheet.src}
+              alt={activeBrochureSheet.title}
+              referrerPolicy="no-referrer"
+              className="h-auto w-full rounded-xl border border-[#D6DFD0]"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

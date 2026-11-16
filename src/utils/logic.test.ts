@@ -19,16 +19,16 @@ import {
 } from './validation';
 
 test('validateEgyptianPhone accepts valid 11-digit Egyptian numbers including Arabic-Indic digits', () => {
-  assert.equal(validateEgyptianPhone('01012345678'), true);
+  assert.equal(validateEgyptianPhone('01092935779'), true);
   assert.equal(validateEgyptianPhone('011-9876-5432'), true);
   assert.equal(validateEgyptianPhone('01234567890'), true);
   assert.equal(validateEgyptianPhone('01555555555'), true);
-  assert.equal(validateEgyptianPhone('٠١٠١٢٣٤٥٦٧٨'), true);
+  assert.equal(validateEgyptianPhone('٠١٠٩٢٩٣٥٧٧٩'), true);
 
-  assert.equal(validateEgyptianPhone('01312345678'), false); // invalid operator prefix
-  assert.equal(validateEgyptianPhone('0101234'), false); // too short
-  assert.equal(validateEgyptianPhone('010123456789'), false); // too long
-  assert.equal(validateEgyptianPhone('0223456789'), false); // landline
+  assert.equal(validateEgyptianPhone('01312345678'), false);
+  assert.equal(validateEgyptianPhone('0101234'), false);
+  assert.equal(validateEgyptianPhone('010123456789'), false);
+  assert.equal(validateEgyptianPhone('0223456789'), false);
   assert.equal(normalizeDigits('٠١٢-٣٤٥'), '012345');
 });
 
@@ -37,7 +37,7 @@ test('validateOrderForm requires valid governorate, name, phone, address, crop, 
     fullName: '',
     phone: '123',
     email: 'bad-email',
-    governorate: 'القاهرة', // outside Beni Suef / Fayoum / Minya
+    governorate: 'القاهرة',
     address: '',
     cropType: '',
     selectedProducts: [],
@@ -57,12 +57,12 @@ test('validateOrderForm requires valid governorate, name, phone, address, crop, 
 
   const valid: OrderFormValues = {
     fullName: 'أحمد محمد علي',
-    phone: '01012345678',
+    phone: '01092935779',
     email: '',
     governorate: 'بني سويف',
     address: 'مركز ببا - قرية قمبش',
     cropType: 'طماطم',
-    selectedProducts: ['مبيد حشري لامبدا ستار 5% (نموذج كتالوج)'],
+    selectedProducts: ['بليزون (Bilison SC)'],
     quantity: '3 عبوات',
     notes: 'التوصيل عصراً',
   };
@@ -93,8 +93,8 @@ test('buildGoogleSheetsPayload and buildWhatsAppOrderMessage format all required
     governorate: 'الفيوم',
     address: 'إطسا - قرية دفنو',
     cropType: 'بصل',
-    selectedProducts: ['مبيد فطري وقائي وعلاجي أزوكسي شيلد (نموذج كتالوج)'],
-    quantity: '2 عبوة',
+    selectedProducts: ['هوستاميك جرين (Hostamic Green)'],
+    quantity: '2 جركن',
     notes: '',
   };
   const attribution = extractAttributionFromSearch(
@@ -104,7 +104,7 @@ test('buildGoogleSheetsPayload and buildWhatsAppOrderMessage format all required
   const payload = buildGoogleSheetsPayload(
     order,
     attribution,
-    'https://example.com/offer/azoxy-shield-25',
+    'https://example.com/offer/hostamic-green',
     '2026-11-16T10:00:00.000Z'
   );
 
@@ -120,35 +120,53 @@ test('buildGoogleSheetsPayload and buildWhatsAppOrderMessage format all required
   assert.match(msg, /الفيوم/);
   assert.match(msg, /fayoum_onion/);
 
-  const url = buildWhatsAppUrl('+20 100-000-0000', msg);
-  assert.ok(url.startsWith('https://wa.me/201000000000?text='));
+  const url = buildWhatsAppUrl('+20 109-293-5779', msg);
+  assert.ok(url.startsWith('https://wa.me/201092935779?text='));
 });
 
-test('catalog filtering supports category tabs and Arabic normalization', () => {
-  assert.equal(normalizeArabicText('أزوكسي أسمدة'), 'ازوكسي اسمده');
+test('catalog holds all 28 brochure products including variants and optional price placeholders', () => {
+  assert.equal(PRODUCTS.length, 28);
 
   const pesticides = filterProducts(PRODUCTS, 'pesticides', '');
-  assert.ok(pesticides.length > 0);
+  assert.equal(pesticides.length, 15);
   assert.ok(pesticides.every((p) => p.category === 'pesticides'));
 
   const fertilizers = filterProducts(PRODUCTS, 'fertilizers', '');
-  assert.ok(fertilizers.length > 0);
+  assert.equal(fertilizers.length, 13);
   assert.ok(fertilizers.every((p) => p.category === 'fertilizers'));
 
-  const searchMatches = filterProducts(PRODUCTS, 'all', 'طماطم');
-  assert.ok(searchMatches.length >= 2);
+  const dantela = findProductBySlug(PRODUCTS, 'dantela-green');
+  assert.ok(dantela);
+  assert.equal(dantela.variants?.length, 2);
+  assert.equal(dantela.variants?.[0]?.priceEgp, 135);
+  assert.equal(dantela.variants?.[1]?.priceEgp, 260);
+
+  const sentamora = findProductBySlug(PRODUCTS, 'sentamora-x');
+  assert.ok(sentamora);
+  assert.equal(sentamora.priceEgp, null);
+});
+
+test('catalog filtering supports Arabic normalization and subCategory/crop search', () => {
+  assert.equal(normalizeArabicText('أزوكسي أسمدة'), 'ازوكسي اسمده');
+
+  const beetMatches = filterProducts(PRODUCTS, 'all', 'بنجر السكر');
+  assert.ok(beetMatches.length >= 2);
+
+  const fungalMatches = filterProducts(PRODUCTS, 'pesticides', 'فطري');
+  assert.equal(fungalMatches.length, 9);
 
   const emptySearch = filterProducts(PRODUCTS, 'all', 'منتج_غير_موجود_نهائيا');
   assert.equal(emptySearch.length, 0);
 });
 
-test('router parses /offer/:slug paths and finds matching product', () => {
+test('router parses /offer/:slug paths and finds matching brochure product', () => {
   assert.equal(parseOfferSlugFromPath('/'), null);
-  assert.equal(parseOfferSlugFromPath('/offer/lambda-star-5'), 'lambda-star-5');
-  assert.equal(parseOfferSlugFromPath('/offer/lambda-star-5/'), 'lambda-star-5');
-  assert.equal(buildOfferPath('lambda-star-5'), '/offer/lambda-star-5');
+  assert.equal(parseOfferSlugFromPath('/offer/bilison'), 'bilison');
+  assert.equal(parseOfferSlugFromPath('/offer/sportage-green/'), 'sportage-green');
+  assert.equal(buildOfferPath('hostamic-green'), '/offer/hostamic-green');
 
-  const found = findProductBySlug(PRODUCTS, 'lambda-star-5');
+  const found = findProductBySlug(PRODUCTS, 'bilison');
   assert.ok(found);
-  assert.equal(found.id, 'pesticide-lambda-5');
+  assert.equal(found.id, 'fungicide-bilison');
+  assert.equal(found.priceEgp, 550);
 });

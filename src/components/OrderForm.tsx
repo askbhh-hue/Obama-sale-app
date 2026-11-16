@@ -391,53 +391,63 @@ export function OrderForm({
 
       {/* Multi-select Product Interest */}
       <fieldset className="mt-6">
-        <legend className="text-sm font-bold text-[#17201A]">
-          اختر المنتجات المطلوبة (يمكنك اختيار أكثر من منتج){' '}
-          <span className="text-[#9A3412]">*</span>
-        </legend>
-        <div className="mt-2.5 grid gap-2.5 sm:grid-cols-2">
-          {products.map((product) => {
-            const checked = values.selectedProducts.includes(product.name);
-            return (
-              <label
-                key={product.id}
-                className={`flex min-h-[48px] cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm transition-colors ${
-                  checked
-                    ? 'border-[#14532D] bg-[#EFF3EC] font-bold text-[#14532D]'
-                    : 'border-[#D6DFD0] bg-[#F8F9F6] text-[#17201A] hover:bg-[#EFF3EC]/60'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleProduct(product.name)}
-                  className="h-5 w-5 accent-[#14532D] shrink-0"
-                />
-                <span className="flex-1 leading-snug">{product.name}</span>
-                {product.priceEgp !== null && (
-                  <span className="text-xs font-bold text-[#4A5D4F] tabular-nums shrink-0">
-                    {product.priceEgp} ج.م
-                  </span>
-                )}
-              </label>
-            );
-          })}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <legend className="text-sm font-bold text-[#17201A]">
+            اختر المنتجات المطلوبة (يمكنك اختيار أكثر من منتج){' '}
+            <span className="text-[#9A3412]">*</span>
+          </legend>
+          <span className="text-xs font-bold text-[#14532D] tabular-nums">
+            المختار: {values.selectedProducts.length}
+          </span>
+        </div>
 
-          <label
-            className={`flex min-h-[48px] cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm sm:col-span-2 transition-colors ${
-              values.selectedProducts.includes(CONSULTATION_OPTION)
-                ? 'border-[#14532D] bg-[#EFF3EC] font-bold text-[#14532D]'
-                : 'border-[#D6DFD0] bg-[#F8F9F6] text-[#17201A] hover:bg-[#EFF3EC]/60'
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={values.selectedProducts.includes(CONSULTATION_OPTION)}
-              onChange={() => toggleProduct(CONSULTATION_OPTION)}
-              className="h-5 w-5 accent-[#14532D] shrink-0"
-            />
-            <span>{CONSULTATION_OPTION}</span>
-          </label>
+        <div className="mt-2.5 max-h-72 overflow-y-auto rounded-xl border border-[#D6DFD0] bg-[#F8F9F6] p-2.5">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {products.map((product) => {
+              const checked = values.selectedProducts.includes(product.name);
+              return (
+                <label
+                  key={product.id}
+                  className={`flex min-h-[46px] cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                    checked
+                      ? 'border-[#14532D] bg-white font-bold text-[#14532D]'
+                      : 'border-[#D6DFD0] bg-white/70 text-[#17201A] hover:bg-white'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleProduct(product.name)}
+                    className="h-5 w-5 accent-[#14532D] shrink-0"
+                  />
+                  <span className="flex-1 leading-snug">{product.name}</span>
+                  {product.priceEgp !== null && (
+                    <span className="text-xs font-bold text-[#4A5D4F] tabular-nums shrink-0">
+                      {product.variants && product.variants.length > 1
+                        ? `من ${product.priceEgp} ج.م`
+                        : `${product.priceEgp} ج.م`}
+                    </span>
+                  )}
+                </label>
+              );
+            })}
+
+            <label
+              className={`flex min-h-[46px] cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm sm:col-span-2 transition-colors ${
+                values.selectedProducts.includes(CONSULTATION_OPTION)
+                  ? 'border-[#14532D] bg-white font-bold text-[#14532D]'
+                  : 'border-[#D6DFD0] bg-white/70 text-[#17201A] hover:bg-white'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={values.selectedProducts.includes(CONSULTATION_OPTION)}
+                onChange={() => toggleProduct(CONSULTATION_OPTION)}
+                className="h-5 w-5 accent-[#14532D] shrink-0"
+              />
+              <span>{CONSULTATION_OPTION}</span>
+            </label>
+          </div>
         </div>
         {errors.selectedProducts && (
           <p className="mt-2 flex items-center gap-1.5 text-xs font-bold text-[#9A3412]">

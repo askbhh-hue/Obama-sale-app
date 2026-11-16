@@ -31,6 +31,7 @@ export function filterProducts(
     const searchableText = normalizeArabicText(
       [
         product.name,
+        product.subCategory || '',
         product.shortUsageNote,
         product.activeIngredient,
         product.targetCropPest,

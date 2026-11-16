@@ -2,14 +2,21 @@ import rawCatalog from './products.json';
 
 export type ProductCategory = 'pesticides' | 'fertilizers';
 
+export interface ProductVariant {
+  packSize: string;
+  priceEgp: number;
+}
+
 export interface Product {
   id: string;
   slug: string;
   name: string;
   category: ProductCategory;
+  subCategory?: string;
   isBestSeller: boolean;
   priceEgp: number | null;
   packSize: string;
+  variants?: ProductVariant[];
   shortUsageNote: string;
   image: string;
   offerHeadline?: string;
