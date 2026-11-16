@@ -2,21 +2,14 @@ import rawCatalog from './products.json';
 
 export type ProductCategory = 'pesticides' | 'fertilizers';
 
-export interface ProductVariant {
-  packSize: string;
-  priceEgp: number;
-}
-
 export interface Product {
   id: string;
   slug: string;
   name: string;
   category: ProductCategory;
-  subCategory?: string;
   isBestSeller: boolean;
   priceEgp: number | null;
   packSize: string;
-  variants?: ProductVariant[];
   shortUsageNote: string;
   image: string;
   offerHeadline?: string;
@@ -28,7 +21,18 @@ export interface Product {
   preHarvestInterval?: string;
 }
 
-export const PRODUCTS: Product[] = rawCatalog.products as Product[];
+// 1.25 = +25%. Change this number only to change all prices
+const PRICE_MARKUP = 1.25;
+
+const withMarkup = (product: Product): Product => ({
+  ...product,
+  priceEgp:
+    product.priceEgp === null
+      ? null
+      : Math.round((product.priceEgp * PRICE_MARKUP) / 5) * 5,
+});
+
+export const PRODUCTS: Product[] = (rawCatalog.products as Product[]).map(withMarkup);
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   pesticides: 'مبيدات',
