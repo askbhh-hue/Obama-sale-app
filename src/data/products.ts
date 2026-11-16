@@ -32,7 +32,40 @@ const withMarkup = (product: Product): Product => ({
       : Math.round((product.priceEgp * PRICE_MARKUP) / 5) * 5,
 });
 
-export const PRODUCTS: Product[] = (rawCatalog.products as Product[]).map(withMarkup);
+const PHOTO_NAMES = [
+  'agromil-phosphite',
+  'hostamic',
+  'garlic-twist',
+  'potassco',
+  'mixafos',
+  'vitogreen',
+  'boronium',
+  'cytoflora',
+  'chip-curan',
+  'mantoral',
+  'amino-flower',
+  'saftogreen',
+  'oglan',
+  'dantela',
+  'copa-plus',
+  'biophos',
+  'sportage',
+  'bilison',
+  'cycostar',
+  'apatchi',
+  'voltan',
+  'nefertity',
+  'agromil',
+];
+
+const withPhoto = (product: Product): Product => {
+  const name = PHOTO_NAMES.find((n) => product.slug.startsWith(n));
+  return name ? { ...product, image: `/${name}.jpg` } : product;
+};
+
+export const PRODUCTS: Product[] = (rawCatalog.products as Product[])
+  .map(withMarkup)
+  .map(withPhoto);
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   pesticides: 'مبيدات',
