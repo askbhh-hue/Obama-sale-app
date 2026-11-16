@@ -29,7 +29,7 @@ export const FACEBOOK_PAGE_URL =
   viteEnv.VITE_FACEBOOK_PAGE_URL || '';
 
 // الاسم التجاري الظاهر في الترويسة
-export const BRAND_NAME = 'أبو عمة وجرين';
+export const BRAND_NAME = 'أبو عمة ';
 
 // اسم المهندس المسؤول الظاهر في البروشور
 export const AGRONOMIST_NAME = 'مهندس / محمود أحمد';
