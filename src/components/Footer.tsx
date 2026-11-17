@@ -1,9 +1,7 @@
 import {
-  AGRONOMIST_NAME,
   BRAND_NAME,
   COMPANY_LEGAL_NAME,
   DELIVERY_GOVERNORATES,
-  FACEBOOK_PAGE_URL,
   PESTICIDE_LICENSE_NUMBER,
   PHONE_NUMBER,
   WHATSAPP_NUMBER,
@@ -12,14 +10,13 @@ import {
 import { trackPixelEvent } from '../utils/pixel';
 import { buildWhatsAppUrl } from '../utils/tracking';
 
+const FACEBOOK_PAGE_URL = 'https://www.facebook.com/share/1E8JBShMNL/';
+
 export function Footer() {
   const whatsappUrl = buildWhatsAppUrl(
     WHATSAPP_NUMBER,
     'السلام عليكم، أريد الاستفسار عن المبيدات والأسمدة المتوفرة.'
   );
-  const hasFacebookUrl =
-    Boolean(FACEBOOK_PAGE_URL) &&
-    !FACEBOOK_PAGE_URL.includes('YOUR_FACEBOOK_PAGE');
 
   return (
     <footer className="border-t border-[#D6DFD0] bg-[#102619] pb-24 pt-12 text-[#E5EFE8] md:pb-12">
@@ -30,13 +27,10 @@ export function Footer() {
               {BRAND_NAME}
             </p>
             <p className="mt-3 text-sm leading-relaxed text-[#C2D3C8]">
-              {COMPANY_LEGAL_NAME} — توريد المبيدات الزراعية والأسمدة الأصلية
-              لمزارعي محافظات: {DELIVERY_GOVERNORATES.join(' · ')}.
+              توريد المبيدات الزراعية والأسمدة الأصلية لمزارعي محافظات:{' '}
+              {DELIVERY_GOVERNORATES.join(' · ')}.
             </p>
-            <p className="mt-2 text-xs font-bold text-[#86EFAC]">
-              إشراف فني واستشارات: {AGRONOMIST_NAME}
-            </p>
-            <p className="mt-2 text-xs leading-relaxed text-[#A8BFB0]">
+            <p className="mt-3 text-xs leading-relaxed text-[#A8BFB0]">
               {WORKING_HOURS}
             </p>
           </div>
@@ -73,19 +67,20 @@ export function Footer() {
                   مراسلة عبر واتساب
                 </a>
               </li>
-              {hasFacebookUrl && (
-                <li>
-                  <span className="text-[#A8BFB0]">صفحة فيسبوك: </span>
-                  <a
-                    href={FACEBOOK_PAGE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-white hover:underline underline-offset-4"
-                  >
-                    زيارة صفحتنا على فيسبوك
-                  </a>
-                </li>
-              )}
+              <li>
+                <span className="text-[#A8BFB0]">صفحتنا على فيس بوك: </span>
+                <a
+                  href={FACEBOOK_PAGE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() =>
+                    trackPixelEvent('Contact', { channel: 'footer_facebook' })
+                  }
+                  className="font-bold text-[#86EFAC] hover:underline underline-offset-4"
+                >
+                  تابعنا على فيس بوك
+                </a>
+              </li>
               <li>
                 <span className="text-[#A8BFB0]">نطاق التوصيل: </span>
                 <span>{DELIVERY_GOVERNORATES.join('، ')} فقط</span>
@@ -107,10 +102,10 @@ export function Footer() {
                 <span className="text-[#A8BFB0]">الكيان التجاري: </span>
                 <span>{COMPANY_LEGAL_NAME}</span>
               </p>
-              <p>
+{PESTICIDE_LICENSE_NUMBER && (<p>
                 <span className="text-[#A8BFB0]">رقم ترخيص تداول المبيدات: </span>
                 <span>{PESTICIDE_LICENSE_NUMBER}</span>
-              </p>
+              </p>)}
             </div>
           </div>
         </div>
