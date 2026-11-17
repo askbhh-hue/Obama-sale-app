@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/offer.js": { "includeFiles": "src/data/products.json" }
+  },
   "rewrites": [
     { "source": "/offer/:slug", "destination": "/api/offer?slug=:slug" },
     { "source": "/(.*)", "destination": "/index.html" }
