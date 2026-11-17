@@ -63,9 +63,17 @@ const withPhoto = (product: Product): Product => {
   return name ? { ...product, image: `/${name}.jpg` } : product;
 };
 
+const NAME_FIXES: Record<string, string> = {
+  'stedasilver-250': 'ستساسيلفر',
+};
+
+const withName = (product: Product): Product =>
+  NAME_FIXES[product.slug] ? { ...product, name: NAME_FIXES[product.slug] } : product;
+
 export const PRODUCTS: Product[] = (rawCatalog.products as Product[])
   .map(withMarkup)
-  .map(withPhoto);
+  .map(withPhoto)
+  .map(withName);
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   pesticides: 'مبيدات',
