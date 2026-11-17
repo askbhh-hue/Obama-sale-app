@@ -18,23 +18,8 @@ export function ProductCard({
   onOpenOffer,
 }: ProductCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
-  const [variantIdx, setVariantIdx] = useState(0);
 
-  const activeVariant =
-    product.variants && product.variants.length > 0
-      ? product.variants[variantIdx] ?? product.variants[0]
-      : null;
-
-  const displayPackSize = activeVariant
-    ? activeVariant.packSize
-    : product.packSize;
-  const displayPrice = activeVariant
-    ? activeVariant.priceEgp
-    : product.priceEgp;
-
-  const whatsappMessage = `السلام عليكم، أريد طلب المنتج التالي:\n- ${product.name}\n- العبوة: ${displayPackSize}${
-    displayPrice !== null ? `\n- السعر المعلن: ${displayPrice} جنيه` : ''
-  }\nيرجى تأكيد التوفر والتوصيل.`;
+  const whatsappMessage = `السلام عليكم، أريد طلب المنتج التالي:\n- ${product.name}\n- العبوة: ${product.packSize}\nيرجى تأكيد التوفر والتوصيل.`;
   const whatsappUrl = buildWhatsAppUrl(WHATSAPP_NUMBER, whatsappMessage);
   const offerPath = buildOfferPath(product.slug);
 
@@ -69,9 +54,9 @@ export function ProductCard({
       <div className="flex flex-1 flex-col p-5">
         {/* Clean unboxed metadata (Zero-pill discipline) */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#4A5D4F]">
-          <span>{product.subCategory || CATEGORY_LABELS[product.category]}</span>
+          <span>{CATEGORY_LABELS[product.category]}</span>
           <span aria-hidden="true">·</span>
-          <span>العبوة: {displayPackSize}</span>
+          <span>العبوة: {product.packSize}</span>
           {product.isBestSeller && (
             <>
               <span aria-hidden="true">·</span>
@@ -83,50 +68,26 @@ export function ProductCard({
         <h3 className="mt-2 font-display text-lg font-bold leading-snug text-[#17201A]">
           {product.name}
         </h3>
+        <p className="mt-2 rounded-xl border border-[#BBD5C0] bg-[#EEF7F0] px-3 py-2 text-sm font-extrabold leading-snug text-[#14532D]">
+          <span className="block text-[11px] font-bold text-[#4A5D4F]">المادة الفعالة</span>
+          {product.activeIngredient}
+        </p>
 
         <p className="mt-2 flex-1 text-sm leading-relaxed text-[#425246]">
           {product.shortUsageNote}
         </p>
 
-        {/* Optional multi-size selector when product has multiple pack sizes */}
-        {product.variants && product.variants.length > 1 && (
-          <div
-            className="mt-3 flex flex-wrap gap-1.5"
-            role="group"
-            aria-label={`اختر حجم العبوة لـ ${product.name}`}
-          >
-            {product.variants.map((variant, idx) => {
-              const active = idx === variantIdx;
-              return (
-                <button
-                  key={variant.packSize}
-                  type="button"
-                  onClick={() => setVariantIdx(idx)}
-                  aria-pressed={active}
-                  className={`min-h-[32px] rounded-md border px-2.5 py-1 text-xs font-bold transition-colors cursor-pointer ${
-                    active
-                      ? 'border-[#14532D] bg-[#14532D] text-white'
-                      : 'border-[#D6DFD0] bg-[#F8F9F6] text-[#37483C] hover:border-[#14532D]'
-                  }`}
-                >
-                  {variant.packSize}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         {/* Price in EGP */}
         <div className="mt-4 flex items-baseline justify-between border-t border-[#E6ECE1] pt-3">
           <span className="text-xs font-medium text-[#4A5D4F]">السعر للعبوة</span>
-          {displayPrice !== null ? (
+          {product.priceEgp !== null ? (
             <p className="font-display text-xl font-extrabold text-[#14532D] tabular-nums">
-              {displayPrice.toLocaleString('ar-EG')}{' '}
+              {product.priceEgp.toLocaleString('ar-EG')}{' '}
               <span className="text-sm font-bold">ج.م</span>
             </p>
           ) : (
             <p className="text-sm font-bold text-[#9A3412]">
-              يُحدَّث السعر عند التأكيد
+              يُحدَّث السعر من البروشور
             </p>
           )}
         </div>
