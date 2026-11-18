@@ -5,6 +5,7 @@ import { CATEGORY_LABELS, type Product } from '../data/products';
 import { trackPixelEvent } from '../utils/pixel';
 import { buildOfferPath } from '../utils/router';
 import { buildWhatsAppUrl } from '../utils/tracking';
+import { ShareButton } from './ShareButton';
 
 interface ProductCardProps {
   product: Product;
@@ -25,7 +26,6 @@ export function ProductCard({
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-[#D6DFD0] bg-white transition-transform duration-150 hover:-translate-y-0.5">
-      {/* Uniform 4:3 product image */}
       <button
         type="button"
         onClick={() => onOpenDetails(product)}
@@ -50,9 +50,7 @@ export function ProductCard({
         )}
       </button>
 
-      {/* Card body */}
       <div className="flex flex-1 flex-col p-5">
-        {/* Clean unboxed metadata (Zero-pill discipline) */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#4A5D4F]">
           <span>{CATEGORY_LABELS[product.category]}</span>
           <span aria-hidden="true">·</span>
@@ -68,16 +66,25 @@ export function ProductCard({
         <h3 className="mt-2 font-display text-lg font-bold leading-snug text-[#17201A]">
           {product.name}
         </h3>
-        <p className="mt-2 rounded-xl border border-[#BBD5C0] bg-[#EEF7F0] px-3 py-2 text-sm font-extrabold leading-snug text-[#14532D]">
+        <p className="mt-3 rounded-xl border-2 border-[#14532D] bg-[#EEF7F0] px-3 py-2.5 text-base font-extrabold leading-snug text-[#14532D]">
           <span className="block text-[11px] font-bold text-[#4A5D4F]">المادة الفعالة</span>
           {product.activeIngredient}
         </p>
 
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-[#425246]">
-          {product.shortUsageNote}
-        </p>
+        <div className="mt-2 rounded-xl border border-[#D6DFD0] bg-white px-3 py-2">
+          <p className="text-[11px] font-bold text-[#4A5D4F]">الاستخدامات</p>
+          <p className="mt-0.5 line-clamp-3 text-sm font-medium leading-relaxed text-[#17201A]">
+            {product.targetCropPest}
+          </p>
+        </div>
 
-        {/* Price in EGP */}
+        <div className="mt-2 flex-1 rounded-xl border border-[#D6DFD0] bg-white px-3 py-2">
+          <p className="text-[11px] font-bold text-[#4A5D4F]">الفائدة</p>
+          <p className="mt-0.5 line-clamp-3 text-sm leading-relaxed text-[#425246]">
+            {product.shortUsageNote}
+          </p>
+        </div>
+
         <div className="mt-4 flex items-baseline justify-between border-t border-[#E6ECE1] pt-3">
           <span className="text-xs font-medium text-[#4A5D4F]">السعر للعبوة</span>
           {product.priceEgp !== null ? (
@@ -87,12 +94,11 @@ export function ProductCard({
             </p>
           ) : (
             <p className="text-sm font-bold text-[#9A3412]">
-              يُحدَّث السعر من البروشور
+              يُحدَّث السعر من البروشور
             </p>
           )}
         </div>
 
-        {/* Primary conversion buttons: WhatsApp & Call Now */}
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           <a
             href={whatsappUrl}
@@ -125,7 +131,6 @@ export function ProductCard({
           </a>
         </div>
 
-        {/* Secondary product info & dedicated ad landing route */}
         <div className="mt-3 flex items-center justify-between gap-2 border-t border-[#EFF3EC] pt-3 text-xs font-bold">
           <button
             type="button"
@@ -148,6 +153,8 @@ export function ProductCard({
             <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           </a>
         </div>
+
+        <ShareButton product={product} />
       </div>
     </article>
   );
