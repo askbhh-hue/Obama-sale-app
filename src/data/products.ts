@@ -21,7 +21,7 @@ export interface Product {
   preHarvestInterval?: string;
 }
 
-// نسبة الزيادة على الأسعار: 1.25 = زيادة 25%. غيّر الرقم ده بس لتغيير كل الأسعار
+// 1.25 = +25%. Change this number only to change all prices
 const PRICE_MARKUP = 1.25;
 
 const withMarkup = (product: Product): Product => ({
@@ -32,8 +32,6 @@ const withMarkup = (product: Product): Product => ({
       : Math.round((product.priceEgp * PRICE_MARKUP) / 5) * 5,
 });
 
-// صور المنتجات: الصورة في public/ واسمها نفس بداية كود المنتج (slug)
-// صور المنتجات: الصورة في public/ . بتتعرف على المنتج من كود المنتج أو من اسمه بالعربي
 const norm = (s: string) =>
   String(s || '')
     .replace(/[أإآ]/g, 'ا')
@@ -42,7 +40,6 @@ const norm = (s: string) =>
     .replace(/[\u064B-\u065F\s\-()]/g, '')
     .toLowerCase();
 
-// [اسم ملف الصورة، بداية كود المنتج، كلمات عربي لازم تكون في الاسم]
 const PHOTO_RULES: [string, string, string[]][] = [
   ['agromil-phosphite', 'agromil-phosphite', ['اجروميل', 'فوسفيت']],
   ['agromil', 'agromil', ['اجروميل']],
@@ -72,7 +69,7 @@ const PHOTO_RULES: [string, string, string[]][] = [
 const photoFor = (product: Product): string | null => {
   const n = norm(product.name);
   const slug = String(product.slug || '').toLowerCase();
-  if (slug.startsWith('new-') || n.startsWith('نيو')) return null; // نيو نفرتيتي مالوش صورة
+  if (slug.startsWith('new-') || n.startsWith('نيو')) return null;
   const hit = PHOTO_RULES.find(
     ([, prefix, keys]) => slug.startsWith(prefix) || keys.every((k) => n.includes(k))
   );
@@ -84,12 +81,15 @@ const withPhoto = (product: Product): Product => {
   return name ? { ...product, image: `/${name}.jpg` } : product;
 };
 
-const NAME_FIXES: Record<string, string> = {
-  'stedasilver-250': 'ستساسيلفر',
+const withName = (product: Product): Product => {
+  const n = norm(product.name);
+  const isSteda =
+    String(product.slug || '').startsWith('stedasilver') ||
+    n.includes('ستداسلفر') ||
+    n.includes('ستداسيلفر') ||
+    (n.includes('ستدا') && n.includes('لفر'));
+  return isSteda ? { ...product, name: 'ستساسيلفر' } : product;
 };
-
-const withName = (product: Product): Product =>
-  NAME_FIXES[product.slug] ? { ...product, name: NAME_FIXES[product.slug] } : product;
 
 export const PRODUCTS: Product[] = (rawCatalog.products as Product[])
   .map(withMarkup)
@@ -100,3 +100,4 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   pesticides: 'مبيدات',
   fertilizers: 'أسمدة',
 };
+
