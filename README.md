@@ -60,3 +60,17 @@
 1. افتح [app.netlify.com](https://app.netlify.com) واختر **Add new site > Import an existing project** (أو ارفع مجلد `dist` بعد تشغيل `npm run build`).
 2. ملف `netlify.toml` مضبوط بالفعل على `npm run build` ومجلد `dist` وتوجيه كل الروابط إلى `index.html`.
 3. لربط دومين خاص: ادخل **Domain management > Add a domain** واتبع خطوات DNS.
+
+
+---
+
+## 5. روابط المنتجات على فيسبوك (معاينة الصورة والاسم)
+
+- بعد `npm run build` يولّد السكريبت `scripts/prerender-offers.mjs` صفحة ثابتة لكل منتج في `dist/offer/<slug>/index.html` فيها وسوم Open Graph (اسم المنتج + صورته من الكتالوج + الاستخدامات والعبوة، بدون سعر).
+- **مهم:** ضع دومين الموقع في متغير البيئة `SITE_URL` (مثال: `https://yourdomain.com`) على Vercel/Netlify. بدونه يحاول السكريبت استخدام رابط المنصة تلقائياً.
+- بعد النشر: اختبر أي رابط في [Sharing Debugger](https://developers.facebook.com/tools/debug/) واضغط "Scrape Again".
+- صور المنتجات: `public/products/<slug>.webp` (للموقع) و `public/og/<slug>.jpg` (للمشاركة 1200×630). أي منتج جديد بدون صورة يستخدم `og-default.jpg`.
+
+## 6. تحديث البيانات من الكتالوج
+
+بيانات 23 منتج (التركيب، الاستخدام، المعدل، العبوة، المميزات، بلد المنشأ، فترة ما قبل الحصاد) مأخوذة من كتالوج جرين داخل `src/data/products.json`. الأسعار والـ slugs محفوظة كما هي.
