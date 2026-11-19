@@ -22,7 +22,7 @@ export interface Product {
 }
 
 // 1.25 = +25%. Change this number only to change all prices
-const PRICE_MARKUP = 1.25;
+const PRICE_MARKUP = 1 ;
 
 const withMarkup = (product: Product): Product => ({
   ...product,
